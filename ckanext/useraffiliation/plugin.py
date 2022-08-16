@@ -6,7 +6,7 @@ import ckan.plugins as plugins
 from ckan.lib.plugins import DefaultTranslation
 from ckan.lib.plugins import DefaultPermissionLabels
 
-from ckanext.useraffiliation import actions
+from ckanext.useraffiliation import actions, blueprints
 
 log = logging.getLogger(__name__)
 
@@ -21,9 +21,9 @@ ALLOWED_ACTIONS = [
 class UserAffiliationPlugin(
     plugins.SingletonPlugin, DefaultTranslation, DefaultPermissionLabels
 ):
-    plugins.implements(plugins.IActions)
-    # plugins.implements(plugins.interfaces.IBlueprint)
     plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IBlueprint)
+    plugins.implements(plugins.IActions)
 
     # IConfigurer
 
@@ -40,3 +40,6 @@ class UserAffiliationPlugin(
         }
         return functions
         
+    # IBlueprint
+    def get_blueprint(self):
+        return blueprints.useraffiliation
