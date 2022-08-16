@@ -39,7 +39,4 @@ class UserAffiliationPlugin(
             "user_update": actions.user_update,
         }
         return functions
-
-    # IBlueprint
-    # def get_blueprint(self):
-    #     return actions.user_affiliation_blueprint
+        
