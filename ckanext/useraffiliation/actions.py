@@ -19,8 +19,8 @@ def _get_user_obj(context):
 
 
 @toolkit.chained_action
-def user_show(up_func, context, data_dict):
-    user = up_func(context, data_dict)
+def user_show(original_action, context, data_dict):
+    user = original_action(context, data_dict)
     user_obj = _get_user_obj(context)
 
     extras = _init_plugin_extras(user_obj.plugin_extras)
@@ -33,8 +33,8 @@ def user_show(up_func, context, data_dict):
 
 
 @toolkit.chained_action
-def user_create(up_func, context, data_dict):
-    user = up_func(context, data_dict)
+def user_create(original_action, context, data_dict):
+    user = original_action(context, data_dict)
     user_obj = _get_user_obj(context)
 
     if not data_dict.get("job_title"):
@@ -60,9 +60,9 @@ def user_create(up_func, context, data_dict):
 
 
 @toolkit.chained_action
-def user_update(up_func, context, data_dict):
+def user_update(original_action, context, data_dict):
     toolkit.check_access("user_update", context, data_dict)
-    user = up_func(context, data_dict)
+    user = original_action(context, data_dict)
     user_obj = _get_user_obj(context)
 
     if not data_dict.get("job_title"):
