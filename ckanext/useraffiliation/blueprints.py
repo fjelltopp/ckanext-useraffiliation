@@ -1,10 +1,12 @@
 # encoding: utf-8
-from operator import index
-import ckan.lib.helpers as h
-from ckan.views.dashboard import index
-from ckan.common import _, config, g
-from flask import Blueprint
 import logging
+import ckan.lib.helpers as h
+from flask import Blueprint
+from operator import index
+from ckan.common import _, config, g
+from ckan.plugins import toolkit
+from ckan.views.dashboard import index
+from ckanext.useraffiliation.actions import check_plugin_extras_provided
 
 log = logging.getLogger(__name__)
 
@@ -16,7 +18,7 @@ useraffiliation = Blueprint(
 
 def check_user_affiliation():
     """
-    Check if user profile has affiliation and job title, as defined by this plugin.
+    Check if user profile has the custom fields, as defined by this plugin.
     """
     try:
         # get user profile
@@ -25,23 +27,18 @@ def check_user_affiliation():
         # assume if this fails that the user is not logged in?
         h.redirect_to(u'user.login')
 
-    # does user profile have the required plugin extras item?
-    hasUserAffiliationFields = 'useraffiliation' in user_profile.plugin_extras
-    # does user have a job title and is it a string with content?
-    hasJobTitle = 'job_title' in user_profile.plugin_extras.get('useraffiliation', {}) and user_profile.plugin_extras.get('useraffiliation', {}).get('job_title', '') != ''
-    # does user have an affiliation and is it a string with content?
-    hasAffiliation = 'affiliation' in user_profile.plugin_extras.get('useraffiliation', {}) and user_profile.plugin_extras.get('useraffiliation', {}).get('affiliation', '') != ''
-    
-    # if any of the above are false
-    if not hasUserAffiliationFields or not hasJobTitle or not hasAffiliation:
-        # redirect to user edit page
-        # with a flash error so the user know what to do
-        h.flash_error('Please complete your profile by adding your job title and affiliation.')
-        return h.redirect_to(u'user.edit')
+    try:
+        # does user have the new fields and are they non-empty strings
+        check_plugin_extras_provided(user_profile.plugin_extras.get('useraffiliation'))
+        # if this passes fine then carry on as normal (i.e. load the dashboard)
+        # Note - this now ignores the ckan.route_after_login config setting, which is not ideal
+        return index()
         
-    # otherwise, carry on as normal (i.e. load the dashboard)
-    # Note - this now ignores the ckan.route_after_login config setting, which is not ideal
-    return index()
+    except toolkit.ValidationError as e:
+        # if this fails then redirect to the user profile page
+        # with a flash error so the user know what to do
+        h.flash_error('Please complete your profile by completing the required fields.')
+        return h.redirect_to(u'user.edit')
 
 
 def get_route_to_intercept():
