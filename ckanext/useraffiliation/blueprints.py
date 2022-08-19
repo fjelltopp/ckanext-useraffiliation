@@ -35,6 +35,8 @@ def check_user_affiliation():
     # if any of the above are false
     if not hasUserAffiliationFields or not hasJobTitle or not hasAffiliation:
         # redirect to user edit page
+        # with a flash error so the user know what to do
+        h.flash_error('Please complete your profile by adding your job title and affiliation.')
         return h.redirect_to(u'user.edit')
         
     # otherwise, carry on as normal (i.e. load the dashboard)
@@ -54,8 +56,9 @@ def get_route_to_intercept():
     if configured_route.endswith('.index'):
         configured_route = configured_route[:-6]
         
-    # add the leading slash and convert and periods to slashes
-    return '/' + configured_route.replace('.', '/')
+    # add the leading and trailing slashes
+    # and convert any internal periods to slashes
+    return '/' + configured_route.replace('.', '/') + '/'
 
 useraffiliation.add_url_rule(
     get_route_to_intercept(),
