@@ -1,25 +1,14 @@
 # encoding: utf-8
 import logging
-
-from ckan.common import CKANConfig
 import ckan.plugins as plugins
 from ckan.lib.plugins import DefaultTranslation
-from ckan.lib.plugins import DefaultPermissionLabels
-
 from ckanext.useraffiliation import actions, blueprints
 
 log = logging.getLogger(__name__)
 
 
-ALLOWED_ACTIONS = [
-    "user_show",
-    "user_create",
-    "user_update",
-]
-
-
 class UserAffiliationPlugin(
-    plugins.SingletonPlugin, DefaultTranslation, DefaultPermissionLabels
+    plugins.SingletonPlugin, DefaultTranslation
 ):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
@@ -27,7 +16,7 @@ class UserAffiliationPlugin(
 
     # IConfigurer
 
-    def update_config(self, config: CKANConfig):
+    def update_config(self, config):
         # Add extension templates directory
         plugins.toolkit.add_template_directory(config, "templates")
 
