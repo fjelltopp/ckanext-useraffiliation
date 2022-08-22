@@ -2,7 +2,7 @@
 import logging
 import ckan.plugins as plugins
 from ckan.lib.plugins import DefaultTranslation
-from ckanext.useraffiliation import actions
+from ckanext.useraffiliation import actions, blueprints
 
 log = logging.getLogger(__name__)
 
@@ -10,8 +10,9 @@ log = logging.getLogger(__name__)
 class UserAffiliationPlugin(
     plugins.SingletonPlugin, DefaultTranslation
 ):
-    plugins.implements(plugins.IActions)
     plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IBlueprint)
+    plugins.implements(plugins.IActions)
 
     # IConfigurer
 
@@ -27,3 +28,7 @@ class UserAffiliationPlugin(
             "user_update": actions.user_update,
         }
         return functions
+        
+    # IBlueprint
+    def get_blueprint(self):
+        return blueprints.useraffiliation

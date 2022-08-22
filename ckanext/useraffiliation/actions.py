@@ -26,7 +26,7 @@ def _commit_plugin_extras(context):
         context['model'].Session.commit()
 
 
-def _check_plugin_extras_provided(data_dict):
+def check_plugin_extras_provided(data_dict):
     for field in CUSTOM_FIELDS:
         if field["name"] not in data_dict or data_dict.get(field["name"]) == '':
             raise toolkit.ValidationError(
@@ -71,7 +71,7 @@ def user_show(original_action, context, data_dict):
 
 @toolkit.chained_action
 def user_create(original_action, context, data_dict):
-    _check_plugin_extras_provided(data_dict)
+    check_plugin_extras_provided(data_dict)
 
     user = original_action(context, data_dict)
     user_obj = _get_user_obj(context)
@@ -89,7 +89,7 @@ def user_create(original_action, context, data_dict):
 @toolkit.chained_action
 def user_update(original_action, context, data_dict):
     toolkit.check_access("user_update", context, data_dict)
-    _check_plugin_extras_provided(data_dict)
+    check_plugin_extras_provided(data_dict)
 
     user = original_action(context, data_dict)
     user_obj = _get_user_obj(context)
